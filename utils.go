@@ -353,19 +353,20 @@ func PrintArrayJavaStyle(sa []string) string {
 	return buffer.String()
 }
 
-
 // murmur hash
-const (
-	c1_32 = 0xCC9E2D51
-	c2_32 = 0x1B873593
-	n1_32 = 0xE6546B64
+var (
+	c1_32 int64 = 0xCC9E2D51
+	c2_32 int64 = 0x1B873593
+	n1_32 int64 = 0xE6546B64
 )
 
 func murmurInit(seed int) int {
 	return seed
 }
 
-func murmurUpdate(h1 int, k1 int) int {
+func murmurUpdate(h1_32 int, k1_32 int) int {
+	k1 := int64(k1_32)
+	h1 := int64(h1_32)
 	k1 *= c1_32
 	k1 = (k1 << 15) | (k1 >> 17) // rotl32(k1, 15)
 	k1 *= c2_32
@@ -373,16 +374,17 @@ func murmurUpdate(h1 int, k1 int) int {
 	h1 ^= k1
 	h1 = (h1 << 13) | (h1 >> 19) // rotl32(h1, 13)
 	h1 = h1*5 + 0xe6546b64
-	return h1
+	return int(h1)
 }
 
-func murmurFinish(h1 int, numberOfWords int) int {
-	h1 ^= (numberOfWords * 4)
+func murmurFinish(h1_32 int, numberOfWords int) int {
+	h1 := int64(h1_32)
+	h1 ^= int64(numberOfWords * 4)
 	h1 ^= h1 >> 16
 	h1 *= 0x85ebca6b
 	h1 ^= h1 >> 13
 	h1 *= 0xc2b2ae35
 	h1 ^= h1 >> 16
 
-	return h1
+	return int(h1)
 }
